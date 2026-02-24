@@ -76,7 +76,15 @@ st.markdown(
    
     # """
 )
+test_data_path = "TestDataMineralModel.csv"  
 
+st.write('See template to upload your data.')
+template_file_path = "Template.csv"
+template_data = pd.read_csv(template_file_path)
+with st.expander("View Template File"):
+    st.dataframe(template_data)
+st.write('You can use test data for demo or upload your own csv file.')
+use_test_data = st.toggle("Test data")
 # st.write("Upload a CSV file with elemental wt% data to predict mineral group and mineral name.")
 
 # -----------------------------
