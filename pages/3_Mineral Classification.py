@@ -60,10 +60,11 @@ st.markdown(
      - **Step 2 – Mineral Name Prediction**: A group-specific neural network model predicts the final mineral species within the predicted group.
 
    
-    # **Supported Cases**
-    # 1. **All Oxides**: Uses all 10 major and minor oxides.
-    # 2. **No SiO₂**: Excludes SiO₂.
-    # 3. **No Alkali Oxides**: Excludes Na₂O and K₂O.
+     - **How It Works**
+       1. The app cleans and standardises the uploaded data.
+       2. Elemental features are aligned with the training dataset.
+       3. The model first predicts the mineral group.
+       4. A dedicated model for that group predicts the final mineral name.
 
     # **Results** 
     # - The app validates your data by checking the element oxides requirements according to the case selected, predicts rock types, and then displays:
@@ -74,15 +75,7 @@ st.markdown(
 )
 
 
-    # - **Dataset**: Upload your oxide wt% dataset.
-    # - **Step 1 – Mineral Group Prediction**: An XGBoost model predicts the mineral group (e.g., silicates, oxides, sulfides, etc.).
-    # - **Step 2 – Mineral Name Prediction**: A group-specific neural network model predicts the final mineral species within the predicted group.
-
-    # **How It Works**
-    # 1. The app cleans and standardises the uploaded data.
-    # 2. Elemental features are aligned with the training dataset.
-    # 3. The model first predicts the mineral group.
-    # 4. A dedicated model for that group predicts the final mineral name.
+    
 
     # **Results**
     # - The app returns:
