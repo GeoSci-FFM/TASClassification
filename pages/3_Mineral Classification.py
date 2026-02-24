@@ -49,29 +49,45 @@ st.sidebar.image(
 
 
 st.title("Mineral Classifier")
-# Introduction section
-st.subheader("What is the Two-Step Mineral Classifier?")
-
+#title of the app.
+st.subheader("What is TAS Rock Classifier?")
 st.markdown(
     """
     The **Two-Step Mineral Classifier** is a machine learning (ML) tool designed for automated mineral identification from geochemical composition data.
+    # - **Dataset**: Upload your own geochemical dataset (See the provided template for reference).
+    # - **Classification Results**: Predicted rock type column in your uploaded data.
+    # - **Visualisation**: Results are plotted on a TAS diagram.
+   
+    # **Supported Cases**
+    # 1. **All Oxides**: Uses all 10 major and minor oxides.
+    # 2. **No SiO₂**: Excludes SiO₂.
+    # 3. **No Alkali Oxides**: Excludes Na₂O and K₂O.
 
-#     - **Dataset**: Upload your oxide wt% dataset.
-#     - **Step 1 – Mineral Group Prediction**: An XGBoost model predicts the mineral group (e.g., silicates, oxides, sulfides, etc.).
-#     - **Step 2 – Mineral Name Prediction**: A group-specific neural network model predicts the final mineral species within the predicted group.
+    # **Results** 
+    # - The app validates your data by checking the element oxides requirements according to the case selected, predicts rock types, and then displays:
+    #    1. A table with your dataset and the predicted rock types.
+    #    2. A TAS plot showing the classification visually.
+   
+    # """
+)
 
-#     **How It Works**
-#     1. The app cleans and standardises the uploaded data.
-#     2. Elemental features are aligned with the training dataset.
-#     3. The model first predicts the mineral group.
-#     4. A dedicated model for that group predicts the final mineral name.
 
-#     **Results**
-#     - The app returns:
-#        1. A table containing your dataset with:
-#           - Predicted mineral group
-#           - Predicted mineral name
-#        2. A downloadable CSV file with the full classification results.
+    # - **Dataset**: Upload your oxide wt% dataset.
+    # - **Step 1 – Mineral Group Prediction**: An XGBoost model predicts the mineral group (e.g., silicates, oxides, sulfides, etc.).
+    # - **Step 2 – Mineral Name Prediction**: A group-specific neural network model predicts the final mineral species within the predicted group.
+
+    # **How It Works**
+    # 1. The app cleans and standardises the uploaded data.
+    # 2. Elemental features are aligned with the training dataset.
+    # 3. The model first predicts the mineral group.
+    # 4. A dedicated model for that group predicts the final mineral name.
+
+    # **Results**
+    # - The app returns:
+    #    1. A table containing your dataset with:
+    #       - Predicted mineral group
+    #       - Predicted mineral name
+    #    2. A downloadable CSV file with the full classification results.
 
 # st.write("Upload a CSV file with elemental wt% data to predict mineral group and mineral name.")
 
