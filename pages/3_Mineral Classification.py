@@ -60,29 +60,22 @@ st.markdown(
      - **Step 2 – Mineral Name Prediction**: A group-specific neural network model predicts the final mineral species within the predicted group.
 
    
-     - **How It Works**
+      **How It Works**
        1. The app cleans and standardises the uploaded data.
        2. Elemental features are aligned with the training dataset.
        3. The model first predicts the mineral group.
        4. A dedicated model for that group predicts the final mineral name.
 
-    # **Results** 
-    # - The app validates your data by checking the element oxides requirements according to the case selected, predicts rock types, and then displays:
-    #    1. A table with your dataset and the predicted rock types.
-    #    2. A TAS plot showing the classification visually.
+     **Results**
+       - The app returns:
+       1. A table containing your dataset with:
+          - Predicted mineral group
+          - Predicted mineral name
+       2. A downloadable CSV file with the full classification results.
+
    
     # """
 )
-
-
-    
-
-    # **Results**
-    # - The app returns:
-    #    1. A table containing your dataset with:
-    #       - Predicted mineral group
-    #       - Predicted mineral name
-    #    2. A downloadable CSV file with the full classification results.
 
 # st.write("Upload a CSV file with elemental wt% data to predict mineral group and mineral name.")
 
