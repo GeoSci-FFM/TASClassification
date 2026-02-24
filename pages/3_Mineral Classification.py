@@ -50,13 +50,15 @@ st.sidebar.image(
 
 st.title("Mineral Classifier")
 #title of the app.
-st.subheader("What is TAS Rock Classifier?")
+st.subheader("What is Two-Step Mineral Classifier?")
 st.markdown(
     """
     The **Two-Step Mineral Classifier** is a machine learning (ML) tool designed for automated mineral identification from geochemical composition data.
-    # - **Dataset**: Upload your own geochemical dataset (See the provided template for reference).
-    # - **Classification Results**: Predicted rock type column in your uploaded data.
-    # - **Visualisation**: Results are plotted on a TAS diagram.
+    
+     - **Dataset**: Upload your oxide wt% dataset.
+     - **Step 1 – Mineral Group Prediction**: An XGBoost model predicts the mineral group (e.g., silicates, oxides, sulfides, etc.).
+     - **Step 2 – Mineral Name Prediction**: A group-specific neural network model predicts the final mineral species within the predicted group.
+
    
     # **Supported Cases**
     # 1. **All Oxides**: Uses all 10 major and minor oxides.
