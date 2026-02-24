@@ -49,12 +49,12 @@ st.sidebar.image(
 
 
 st.title("Mineral Classifier")
-# # Introduction section
-# st.subheader("What is the Two-Step Mineral Classifier?")
+# Introduction section
+st.subheader("What is the Two-Step Mineral Classifier?")
 
-# st.markdown(
-#     """
-#     The **Two-Step Mineral Classifier** is a machine learning (ML) tool designed for automated mineral identification from geochemical composition data.
+st.markdown(
+    """
+    The **Two-Step Mineral Classifier** is a machine learning (ML) tool designed for automated mineral identification from geochemical composition data.
 
 #     - **Dataset**: Upload your oxide wt% dataset.
 #     - **Step 1 – Mineral Group Prediction**: An XGBoost model predicts the mineral group (e.g., silicates, oxides, sulfides, etc.).
