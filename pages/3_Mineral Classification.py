@@ -77,7 +77,6 @@ st.markdown(
     # """
 )
 test_data_path = "TestDataMineralModel.csv"  
-
 st.write('See template to upload your data.')
 template_file_path = "Template.csv"
 template_data = pd.read_csv(template_file_path)
@@ -85,74 +84,91 @@ with st.expander("View Template File"):
     st.dataframe(template_data)
 st.write('You can use test data for demo or upload your own csv file.')
 use_test_data = st.toggle("Test data")
-# st.write("Upload a CSV file with elemental wt% data to predict mineral group and mineral name.")
-
 # -----------------------------
 # Data Cleaning Functions
 # -----------------------------
 
-# def clean_cell(val):
-#     if isinstance(val, str):
-#         val = val.strip()
-#         if re.match(r'^<\s*\d*\.?\d+$', val):
-#             return 0.0
-#         if val.lower() in ['na', 'n/a', 'nan', 'none', '']:
-#             return np.nan
-#         if val.startswith('#'):
-#             return np.nan
-#         val = val.replace(',', '.')
-#         if re.search(r'[\\/;]', val):
-#             return np.nan
-#     try:
-#         return float(val)
-#     except:
-#         return val
+def clean_cell(val):
+    if isinstance(val, str):
+        val = val.strip()
+        if re.match(r'^<\s*\d*\.?\d+$', val):
+            return 0.0
+        if val.lower() in ['na', 'n/a', 'nan', 'none', '']:
+            return np.nan
+        if val.startswith('#'):
+            return np.nan
+        val = val.replace(',', '.')
+        if re.search(r'[\\/;]', val):
+            return np.nan
+    try:
+        return float(val)
+    except:
+        return val
 
-# def clean_dataframe(df):
-#     df = df.copy()
-#     numeric_cols = df.select_dtypes(include=['object']).columns
-#     df[numeric_cols] = df[numeric_cols].applymap(clean_cell)
-#     df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='ignore')
+def clean_dataframe(df):
+    df = df.copy()
+    numeric_cols = df.select_dtypes(include=['object']).columns
+    df[numeric_cols] = df[numeric_cols].applymap(clean_cell)
+    df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='ignore')
 
-#     drop_cols = [
-#         'mineral_frequency', 'sample_label', 'rock_name', 'classification',
-#         'latitude', 'longitude', 'doi/ref', 'igsn', 'analytical_method', 'data_source'
-#     ]
-#     df.drop(columns=[c for c in drop_cols if c in df.columns], inplace=True)
-#     return df
+    drop_cols = [
+        'mineral_frequency', 'sample_label', 'rock_name', 'classification',
+        'latitude', 'longitude', 'doi/ref', 'igsn', 'analytical_method', 'data_source'
+    ]
+    df.drop(columns=[c for c in drop_cols if c in df.columns], inplace=True)
+    return df
 
-# # -----------------------------
-# # Load Step 1 Model (cached)
-# # -----------------------------
+# -----------------------------
+# Load Step 1 Model (cached)
+# -----------------------------
 
-# @st.cache_resource
-# def load_step1():
-#     xgb_model = joblib.load("mineral_group_xgb_model.pkl")
-#     encoder = joblib.load("group_label_encoder.pkl")
-#     feature_columns = joblib.load("feature_columns.pkl")
-#     return xgb_model, encoder, feature_columns
+@st.cache_resource
+def load_step1():
+    xgb_model = joblib.load("mineral_group_xgb_model.pkl")
+    encoder = joblib.load("group_label_encoder.pkl")
+    feature_columns = joblib.load("feature_columns.pkl")
+    return xgb_model, encoder, feature_columns
 
-# # -----------------------------
-# # File Upload
-# # -----------------------------
+# -----------------------------
+# File Upload
+# -----------------------------
 
-# uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
+uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
 
-# if uploaded_file is not None:
+if uploaded_file is not None:
 
-#     st.success("File uploaded successfully!")
+    st.success("File uploaded successfully!")
 
-#     df = pd.read_csv(uploaded_file, encoding='ISO-8859-1')
-#     st.write("Preview of uploaded data:")
-#     st.dataframe(df.head())
+    df = pd.read_csv(uploaded_file, encoding='ISO-8859-1')
 
-#     # -----------------------------
-#     # Clean Data
-#     # -----------------------------
+    # -----------------------------
+    # Enforce Column Order (ADD HERE)
+    # -----------------------------
 
-#     with st.spinner("Cleaning data..."):
-#         unknown_clean = clean_dataframe(df)
+    columns_order = [
+        "mineral_name","mineral_group","mineral_frequency","sample_label","rock_name","classification",
+        "latitude","longitude","doi/ref","igsn","analytical_method","data_source",
+        "SiO2","TiO2","Al2O3","FeO","MnO","MgO","Cr2O3","Fe2O3","CaO","Na2O","K2O","P2O5","NiO",
+        "BaO","CO2","SO3","SO2","PbO","SrO","ZrO2","Nb2O5","B2O3","WO3","As2O5","ZnO","MoO3","CuO",
+        "CdO","Mn2O3","Cu2O","SnO","BeO","SnO2","H2O","F","Cl","Si","Ti","Al","Fe","S","C","Cu","Pb",
+        "Zn","Co","Ni","As","Ag","Sb","Hg","Bi","Te","Mo","Mn","Mg","Ca","Na","K","Cr","Sr","Ba",
+        "Y2O3","Sc2O3","La2O3","Ce2O3","Pr2O3","Nd2O3","Sm2O3","Gd2O3","Dy2O3","ThO2","UO2","Tb2O3",
+        "V2O5","Li","PbO2","TeO2","V2O3","MnO2","Li2O","Cs2O","GeO2","Rb2O","NH42O","Ti2O3"
+    ]
 
+    # Strict schema alignment (recommended for MineralTD work)
+    df = df.reindex(columns=columns_order)
+
+    st.write("Preview of uploaded data (schema-aligned):")
+    st.dataframe(df.head())
+
+    # -----------------------------
+    # Clean Data
+    # -----------------------------
+
+    with st.spinner("Cleaning data..."):
+        unknown_clean = clean_dataframe(df)
+        
 #     # -----------------------------
 #     # Step 1: Group Prediction
 #     # -----------------------------
