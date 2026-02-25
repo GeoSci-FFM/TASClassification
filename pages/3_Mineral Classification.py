@@ -116,7 +116,7 @@ def clean_dataframe(df):
 
 @st.cache_resource
 def load_step1():
-    xgb_model = joblib.load("mineral_group_xgb_model.pkl")
+    xgb_model = joblib.load("mineral_group_classifier_xgb.pkl")
     encoder = joblib.load("group_label_encoder.pkl")
     feature_columns = joblib.load("feature_columns.pkl")
     return xgb_model, encoder, feature_columns
