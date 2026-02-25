@@ -165,7 +165,7 @@ if uploaded_file is not None:
     # -----------------------------
 
     st.subheader("Processed Input Data")
-    st.dataframe(unknown_clean.head())
+    st.dataframe(unknown_clean)
         
 #     # -----------------------------
 #     # Step 1: Group Prediction
