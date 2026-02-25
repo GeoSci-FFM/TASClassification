@@ -76,14 +76,6 @@ st.markdown(
    
     # """
 )
-test_data_path = "TestDataMineralModel.csv"  
-st.write('See template to upload your data.')
-template_file_path = "Template.csv"
-template_data = pd.read_csv(template_file_path)
-with st.expander("View Template File"):
-    st.dataframe(template_data)
-st.write('You can use test data for demo or upload your own csv file.')
-use_test_data = st.toggle("Test data")
 # -----------------------------
 # Data Cleaning Functions
 # -----------------------------
@@ -129,61 +121,73 @@ def load_step1():
     feature_columns = joblib.load("feature_columns.pkl")
     return xgb_model, encoder, feature_columns
 
-# -----------------------------
-# File Upload
-# -----------------------------
+test_data_path = "TestDataMineralModel.csv"
+template_file_path = "Template.csv"
 
-uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
+st.write("See template to upload your data.")
 
-if uploaded_file is not None:
+template_data = pd.read_csv(template_file_path)
 
-    st.success("File uploaded successfully!")
+with st.expander("View Template File"):
+    st.dataframe(template_data)
+
+st.write("You can use test data for demo or upload your own CSV file.")
+
+use_test_data = st.toggle("Use Test Data")
+
+if use_test_data:
+    df = pd.read_csv(test_data_path)
+    st.info("Using internal test dataset.")
+else:
+    uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
+    if uploaded_file is not None:
+        df = pd.read_csv(uploaded_file, encoding='ISO-8859-1')
+    else:
+        st.stop() 
 
     # -----------------------------
     # Read File
     # -----------------------------
+columns_order = [
+    "mineral_name","mineral_group","mineral_frequency","sample_label","rock_name","classification",
+    "latitude","longitude","doi/ref","igsn","analytical_method","data_source",
+    "SiO2","TiO2","Al2O3","FeO","MnO","MgO","Cr2O3","Fe2O3","CaO","Na2O","K2O","P2O5","NiO",
+    "BaO","CO2","SO3","SO2","PbO","SrO","ZrO2","Nb2O5","B2O3","WO3","As2O5","ZnO","MoO3","CuO",
+    "CdO","Mn2O3","Cu2O","SnO","BeO","SnO2","H2O","F","Cl","Si","Ti","Al","Fe","S","C","Cu","Pb",
+    "Zn","Co","Ni","As","Ag","Sb","Hg","Bi","Te","Mo","Mn","Mg","Ca","Na","K","Cr","Sr","Ba",
+    "Y2O3","Sc2O3","La2O3","Ce2O3","Pr2O3","Nd2O3","Sm2O3","Gd2O3","Dy2O3","ThO2","UO2","Tb2O3",
+    "V2O5","Li","PbO2","TeO2","V2O3","MnO2","Li2O","Cs2O","GeO2","Rb2O","NH42O","Ti2O3"
+]
 
-    df = pd.read_csv(uploaded_file, encoding='ISO-8859-1')
+df = df.reindex(columns=columns_order)
 
-    columns_order = [
-        "mineral_name","mineral_group","mineral_frequency","sample_label","rock_name","classification",
-        "latitude","longitude","doi/ref","igsn","analytical_method","data_source",
-        "SiO2","TiO2","Al2O3","FeO","MnO","MgO","Cr2O3","Fe2O3","CaO","Na2O","K2O","P2O5","NiO",
-        "BaO","CO2","SO3","SO2","PbO","SrO","ZrO2","Nb2O5","B2O3","WO3","As2O5","ZnO","MoO3","CuO",
-        "CdO","Mn2O3","Cu2O","SnO","BeO","SnO2","H2O","F","Cl","Si","Ti","Al","Fe","S","C","Cu","Pb",
-        "Zn","Co","Ni","As","Ag","Sb","Hg","Bi","Te","Mo","Mn","Mg","Ca","Na","K","Cr","Sr","Ba",
-        "Y2O3","Sc2O3","La2O3","Ce2O3","Pr2O3","Nd2O3","Sm2O3","Gd2O3","Dy2O3","ThO2","UO2","Tb2O3",
-        "V2O5","Li","PbO2","TeO2","V2O3","MnO2","Li2O","Cs2O","GeO2","Rb2O","NH42O","Ti2O3"
-    ]
 
-    df = df.reindex(columns=columns_order)
+# =====================================================
+# Cleaning
+# =====================================================
 
-    unknown_clean = clean_dataframe(df)
+unknown_clean = clean_dataframe(df)
 
-    # -----------------------------
-    # Show ONLY Final Processed Data
-    # -----------------------------
-
-    st.subheader("Processed Input Data")
-    st.dataframe(unknown_clean)
+st.subheader("Processed Input Data (Schema-Aligned & Cleaned)")
+st.dataframe(unknown_clean.head())
         
-#     # -----------------------------
-#     # Step 1: Group Prediction
-#     # -----------------------------
+    # -----------------------------
+    # Step 1: Group Prediction
+    # -----------------------------
 
-#     with st.spinner("Loading Step 1 model..."):
-#         xgb_model, encoder, feature_columns = load_step1()
+    with st.spinner("Loading Step 1 model..."):
+        xgb_model, encoder, feature_columns = load_step1()
 
-#     X_unknown = unknown_clean.reindex(columns=feature_columns, fill_value=0)
+    X_unknown = unknown_clean.reindex(columns=feature_columns, fill_value=0)
 
-#     with st.spinner("Predicting mineral groups..."):
-#         group_preds_encoded = xgb_model.predict(X_unknown)
-#         group_preds = encoder.inverse_transform(group_preds_encoded)
+    with st.spinner("Predicting mineral groups..."):
+        group_preds_encoded = xgb_model.predict(X_unknown)
+        group_preds = encoder.inverse_transform(group_preds_encoded)
 
-#     unknown_clean["predicted_group"] = group_preds
+    unknown_clean["predicted_group"] = group_preds
 
-#     st.success("Step 1 complete — Mineral groups predicted!")
-#     st.dataframe(unknown_clean[["predicted_group"]].head())
+    st.success("Step 1 complete — Mineral groups predicted!")
+    st.dataframe(unknown_clean[["predicted_group"]].head())
 
 #     # -----------------------------
 #     # Step 2: Mineral Prediction
