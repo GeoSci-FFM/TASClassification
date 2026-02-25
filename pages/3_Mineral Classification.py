@@ -175,19 +175,19 @@ st.dataframe(unknown_clean.head())
     # Step 1: Group Prediction
     # -----------------------------
 
-    with st.spinner("Loading Step 1 model..."):
-        xgb_model, encoder, feature_columns = load_step1()
+    # with st.spinner("Loading Step 1 model..."):
+    #     xgb_model, encoder, feature_columns = load_step1()
 
-    X_unknown = unknown_clean.reindex(columns=feature_columns, fill_value=0)
+    # X_unknown = unknown_clean.reindex(columns=feature_columns, fill_value=0)
 
-    with st.spinner("Predicting mineral groups..."):
-        group_preds_encoded = xgb_model.predict(X_unknown)
-        group_preds = encoder.inverse_transform(group_preds_encoded)
+    # with st.spinner("Predicting mineral groups..."):
+    #     group_preds_encoded = xgb_model.predict(X_unknown)
+    #     group_preds = encoder.inverse_transform(group_preds_encoded)
 
-    unknown_clean["predicted_group"] = group_preds
+    # unknown_clean["predicted_group"] = group_preds
 
-    st.success("Step 1 complete — Mineral groups predicted!")
-    st.dataframe(unknown_clean[["predicted_group"]].head())
+    # st.success("Step 1 complete — Mineral groups predicted!")
+    # st.dataframe(unknown_clean[["predicted_group"]].head())
 
 #     # -----------------------------
 #     # Step 2: Mineral Prediction
