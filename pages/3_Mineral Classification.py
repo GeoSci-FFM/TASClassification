@@ -62,7 +62,7 @@ st.markdown(
    
       **How It Works**
        1. The app cleans and standardises the uploaded data.
-       2. Elemental features are aligned with the training dataset.
+       2. Columns are aligned with the training dataset.
        3. The model first predicts the mineral group.
        4. A dedicated model for that group predicts the final mineral name.
 
@@ -139,11 +139,11 @@ if uploaded_file is not None:
 
     st.success("File uploaded successfully!")
 
-    df = pd.read_csv(uploaded_file, encoding='ISO-8859-1')
+    # -----------------------------
+    # Read File
+    # -----------------------------
 
-    # -----------------------------
-    # Enforce Column Order (ADD HERE)
-    # -----------------------------
+    df = pd.read_csv(uploaded_file, encoding='ISO-8859-1')
 
     columns_order = [
         "mineral_name","mineral_group","mineral_frequency","sample_label","rock_name","classification",
@@ -156,18 +156,16 @@ if uploaded_file is not None:
         "V2O5","Li","PbO2","TeO2","V2O3","MnO2","Li2O","Cs2O","GeO2","Rb2O","NH42O","Ti2O3"
     ]
 
-    # Strict schema alignment (recommended for MineralTD work)
     df = df.reindex(columns=columns_order)
 
-    st.write("Preview of uploaded data (schema-aligned):")
-    st.dataframe(df.head())
+    unknown_clean = clean_dataframe(df)
 
     # -----------------------------
-    # Clean Data
+    # Show ONLY Final Processed Data
     # -----------------------------
 
-    with st.spinner("Cleaning data..."):
-        unknown_clean = clean_dataframe(df)
+    st.subheader("Processed Input Data")
+    st.dataframe(unknown_clean.head())
         
 #     # -----------------------------
 #     # Step 1: Group Prediction
