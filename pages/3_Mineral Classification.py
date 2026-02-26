@@ -184,10 +184,13 @@ with st.spinner("Predicting mineral groups..."):
     group_preds_encoded = xgb_model.predict(X_unknown)
     group_preds = encoder.inverse_transform(group_preds_encoded)
 
-unknown_clean["predicted_group"] = group_preds
+# Add predictions to ORIGINAL dataframe (not cleaned one)
+df["predicted_group"] = group_preds
 
 st.success("Step 1 complete — Mineral groups predicted!")
-st.dataframe(unknown_clean[["predicted_group"]].head())
+
+st.subheader("Full Data with Predicted Mineral Group")
+st.dataframe(df)
 
 
 #     # -----------------------------
