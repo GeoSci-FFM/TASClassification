@@ -230,7 +230,12 @@ for group in df["predicted_group"].unique():
         # Load once per group
         scaler = joblib.load(scaler_path)
         class_names = joblib.load(class_names_path)
-        model = load_model(model_path)
+        # model = load_model(model_path)
+        model = load_model(
+        model_path,
+            custom_objects={"LeakyReLU": LeakyReLU},
+            compile=False
+        )
 
         # Scale and predict
         X_scaled = scaler.transform(X_group)
