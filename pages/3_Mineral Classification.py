@@ -201,62 +201,68 @@ final_predictions = []
 
 st.write("### Step 2: Predicting minerals per group")
 
-for group in unknown_clean["predicted_group"].unique():
+df["predicted_mineral"] = None  # Create empty column first
+
+for group in df["predicted_group"].unique():
     try:
         st.write(f"Processing group: {group}")
 
-        group_data = unknown_clean[
-            unknown_clean["predicted_group"] == group
-            ].copy()
+        # Get row indices for this group
+        group_indices = df[df["predicted_group"] == group].index
 
-        X_group = group_data[feature_columns].fillna(0)
+        # Get corresponding ML features
+        X_group = X_unknown.loc[group_indices]
 
-        # Load per-group model files
+        # File paths
         scaler_path = f"scaler_{group}.pkl"
         model_path = f"model_{group}.h5"
         class_names_path = f"class_names_{group}.pkl"
 
-        if not (os.path.exists(scaler_path) and 
-                os.path.exists(model_path) and 
-                os.path.exists(class_names_path)):
+        if not (
+            os.path.exists(scaler_path) and
+            os.path.exists(model_path) and
+            os.path.exists(class_names_path)
+        ):
             st.warning(f"Missing files for group {group}")
             continue
 
+        # Load once per group
         scaler = joblib.load(scaler_path)
         class_names = joblib.load(class_names_path)
         model = load_model(model_path)
 
-        # Scale & Predict
+        # Scale and predict
         X_scaled = scaler.transform(X_group)
         pred_probs = model.predict(X_scaled)
         pred_labels = np.argmax(pred_probs, axis=1)
         mineral_preds = [class_names[i] for i in pred_labels]
 
-        group_data["predicted_mineral"] = mineral_preds
-        final_predictions.append(group_data)
+        # Insert predictions back into original dataframe
+        df.loc[group_indices, "predicted_mineral"] = mineral_preds
 
     except Exception as e:
         st.error(f"Error predicting for {group}: {e}")
 
-    # -----------------------------
-    # Final Output
-    # -----------------------------
+# =====================================================
+# Final Output
+# =====================================================
 
-if final_predictions:
-    result_df = pd.concat(final_predictions)
+if df["predicted_mineral"].notna().any():
 
     st.success("Full pipeline complete!")
-    st.write("### Final Predictions")
-    st.dataframe(result_df.head())
 
-        # Download button
-    csv = result_df.to_csv(index=False).encode('utf-8')
+    st.write("### Final Predictions (Full Dataset)")
+    st.dataframe(df)
+
+    # Download full dataset with both predictions
+    csv = df.to_csv(index=False).encode("utf-8")
+
     st.download_button(
         label="Download Final Predictions CSV",
         data=csv,
         file_name="final_pipeline_predictions.csv",
         mime="text/csv"
-        )
+    )
 
 else:
     st.error("No valid predictions — check model/scaler files or input data.")
