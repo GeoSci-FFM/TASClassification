@@ -206,7 +206,7 @@ df["predicted_mineral"] = None  # Create empty column first
 
 for group in df["predicted_group"].unique():
     try:
-        st.write(f"Processing group: {group}")
+        # st.write(f"Processing group: {group}")
 
         # Get row indices for this group
         group_indices = df[df["predicted_group"] == group].index
