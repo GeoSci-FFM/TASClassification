@@ -193,70 +193,70 @@ st.subheader("Full Data with Predicted Mineral Group")
 st.dataframe(df)
 
 
-#     # -----------------------------
-#     # Step 2: Mineral Prediction
-#     # -----------------------------
+    # -----------------------------
+    # Step 2: Mineral Prediction
+    # -----------------------------
 
-#     final_predictions = []
+    final_predictions = []
 
-#     st.write("### Step 2: Predicting minerals per group")
+    st.write("### Step 2: Predicting minerals per group")
 
-#     for group in unknown_clean["predicted_group"].unique():
-#         try:
-#             st.write(f"Processing group: {group}")
+    for group in unknown_clean["predicted_group"].unique():
+        try:
+            st.write(f"Processing group: {group}")
 
-#             group_data = unknown_clean[
-#                 unknown_clean["predicted_group"] == group
-#             ].copy()
+            group_data = unknown_clean[
+                unknown_clean["predicted_group"] == group
+            ].copy()
 
-#             X_group = group_data[feature_columns].fillna(0)
+            X_group = group_data[feature_columns].fillna(0)
 
-#             # Load per-group model files
-#             scaler_path = f"scaler_{group}.pkl"
-#             model_path = f"model_{group}.h5"
-#             class_names_path = f"class_names_{group}.pkl"
+            # Load per-group model files
+            scaler_path = f"scaler_{group}.pkl"
+            model_path = f"model_{group}.h5"
+            class_names_path = f"class_names_{group}.pkl"
 
-#             if not (os.path.exists(scaler_path) and 
-#                     os.path.exists(model_path) and 
-#                     os.path.exists(class_names_path)):
-#                 st.warning(f"Missing files for group {group}")
-#                 continue
+            if not (os.path.exists(scaler_path) and 
+                    os.path.exists(model_path) and 
+                    os.path.exists(class_names_path)):
+                st.warning(f"Missing files for group {group}")
+                continue
 
-#             scaler = joblib.load(scaler_path)
-#             class_names = joblib.load(class_names_path)
-#             model = load_model(model_path)
+            scaler = joblib.load(scaler_path)
+            class_names = joblib.load(class_names_path)
+            model = load_model(model_path)
 
-#             # Scale & Predict
-#             X_scaled = scaler.transform(X_group)
-#             pred_probs = model.predict(X_scaled)
-#             pred_labels = np.argmax(pred_probs, axis=1)
-#             mineral_preds = [class_names[i] for i in pred_labels]
+            # Scale & Predict
+            X_scaled = scaler.transform(X_group)
+            pred_probs = model.predict(X_scaled)
+            pred_labels = np.argmax(pred_probs, axis=1)
+            mineral_preds = [class_names[i] for i in pred_labels]
 
-#             group_data["predicted_mineral"] = mineral_preds
-#             final_predictions.append(group_data)
+            group_data["predicted_mineral"] = mineral_preds
+            final_predictions.append(group_data)
 
-#         except Exception as e:
-#             st.error(f"Error predicting for {group}: {e}")
+        except Exception as e:
+            st.error(f"Error predicting for {group}: {e}")
 
-#     # -----------------------------
-#     # Final Output
-#     # -----------------------------
+    # -----------------------------
+    # Final Output
+    # -----------------------------
 
-#     if final_predictions:
-#         result_df = pd.concat(final_predictions)
+    if final_predictions:
+        result_df = pd.concat(final_predictions)
 
-#         st.success("Full pipeline complete!")
-#         st.write("### Final Predictions")
-#         st.dataframe(result_df.head())
+        st.success("Full pipeline complete!")
+        st.write("### Final Predictions")
+        st.dataframe(result_df.head())
 
-#         # Download button
-#         csv = result_df.to_csv(index=False).encode('utf-8')
-#         st.download_button(
-#             label="Download Final Predictions CSV",
-#             data=csv,
-#             file_name="final_pipeline_predictions.csv",
-#             mime="text/csv"
-#         )
+        # Download button
+        csv = result_df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download Final Predictions CSV",
+            data=csv,
+            file_name="final_pipeline_predictions.csv",
+            mime="text/csv"
+        )
 
-#     else:
-#         st.error("No valid predictions — check model/scaler files or input data.")
+    else:
+        st.error("No valid predictions — check model/scaler files or input data.")
