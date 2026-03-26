@@ -123,7 +123,7 @@ def load_step1():
     return xgb_model, encoder, feature_columns
 
 test_data_path = "TestDataMineralModel.csv"
-template_file_path = "Template.csv"
+template_file_path = "Template Mineral Classification.csv"
 
 st.write("See template to upload your data.")
 
