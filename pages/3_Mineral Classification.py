@@ -105,7 +105,7 @@ def clean_dataframe(df):
     df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='ignore')
 
     drop_cols = [
-        'mineral_name', 'mineral_group', 'mineral_frequency', 'sample_label', 'rock_name', 'classification',
+        'mineral_frequency', 'sample_label', 'rock_name', 'classification',
         'latitude', 'longitude', 'doi/ref', 'igsn', 'analytical_method', 'data_source'
     ]
     df.drop(columns=[c for c in drop_cols if c in df.columns], inplace=True)
