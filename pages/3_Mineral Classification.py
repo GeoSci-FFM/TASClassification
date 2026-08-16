@@ -257,11 +257,20 @@ if df["predicted_mineral"].notna().any():
 
     st.success("Full pipeline complete!")
 
-    st.write("### Final Predictions (Full Dataset)")
-    st.dataframe(df)
+    # Put prediction columns first
+    prediction_columns = ["predicted_group", "predicted_mineral"]
+    remaining_columns = [
+        col for col in df.columns
+        if col not in prediction_columns
+    ]
 
-    # Download full dataset with both predictions
-    csv = df.to_csv(index=False).encode("utf-8")
+    final_df = df[prediction_columns + remaining_columns]
+
+    st.write("### Final Predictions (Full Dataset)")
+    st.dataframe(final_df)
+
+    # Download full dataset with predictions first
+    csv = final_df.to_csv(index=False).encode("utf-8")
 
     st.download_button(
         label="Download Final Predictions CSV",
@@ -272,3 +281,23 @@ if df["predicted_mineral"].notna().any():
 
 else:
     st.error("No valid predictions — check model/scaler files or input data.")
+    
+# if df["predicted_mineral"].notna().any():
+
+#     st.success("Full pipeline complete!")
+
+#     st.write("### Final Predictions (Full Dataset)")
+#     st.dataframe(df)
+
+#     # Download full dataset with both predictions
+#     csv = df.to_csv(index=False).encode("utf-8")
+
+#     st.download_button(
+#         label="Download Final Predictions CSV",
+#         data=csv,
+#         file_name="final_pipeline_predictions.csv",
+#         mime="text/csv"
+#     )
+
+# else:
+#     st.error("No valid predictions — check model/scaler files or input data.")
