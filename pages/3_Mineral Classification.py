@@ -100,16 +100,50 @@ def clean_cell(val):
 
 def clean_dataframe(df):
     df = df.copy()
+
     numeric_cols = df.select_dtypes(include=['object']).columns
-    df[numeric_cols] = df[numeric_cols].applymap(clean_cell)
-    df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='ignore')
+
+    # Apply cleaning function element-by-element
+    for col in numeric_cols:
+        df[col] = df[col].map(clean_cell)
+
+    # Convert cleaned values to numeric where possible
+    for col in numeric_cols:
+        df[col] = pd.to_numeric(df[col], errors='ignore')
 
     drop_cols = [
-        'mineral_frequency', 'sample_label', 'rock_name', 'classification',
-        'latitude', 'longitude', 'doi/ref', 'igsn', 'analytical_method', 'data_source'
+        'mineral_frequency',
+        'sample_label',
+        'rock_name',
+        'classification',
+        'latitude',
+        'longitude',
+        'doi/ref',
+        'igsn',
+        'analytical_method',
+        'data_source'
     ]
-    df.drop(columns=[c for c in drop_cols if c in df.columns], inplace=True)
+
+    df.drop(
+        columns=[c for c in drop_cols if c in df.columns],
+        inplace=True
+    )
+
     return df
+
+# def clean_dataframe(df):
+#     df = df.copy()
+#     numeric_cols = df.select_dtypes(include=['object']).columns
+#     df[numeric_cols] = df[numeric_cols].applymap(clean_cell)
+#     df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='ignore')
+
+#     drop_cols = [
+#         'mineral_frequency', 'sample_label', 'rock_name', 'classification',
+#         'latitude', 'longitude', 'doi/ref', 'igsn', 'analytical_method', 'data_source'
+#     ]
+#     df.drop(columns=[c for c in drop_cols if c in df.columns], inplace=True)
+#     return df
+
 
 # -----------------------------
 # Load Step 1 Model (cached)
@@ -253,23 +287,54 @@ for group in df["predicted_group"].unique():
 # Final Output
 # =====================================================
 
+# =====================================================
+# Final Output
+# =====================================================
+
 if df["predicted_mineral"].notna().any():
 
     st.success("Full pipeline complete!")
 
+    # Columns that should NOT appear in the final prediction output
+    metadata_columns = [
+        "mineral_name",
+        "mineral_group",
+        "mineral_frequency",
+        "sample_label",
+        "rock_name",
+        "classification",
+        "latitude",
+        "longitude",
+        "doi/ref",
+        "igsn",
+        "analytical_method",
+        "data_source"
+    ]
+
+    # Remove metadata columns
+    final_df = df.drop(
+        columns=[c for c in metadata_columns if c in df.columns]
+    ).copy()
+
     # Put prediction columns first
-    prediction_columns = ["predicted_group", "predicted_mineral"]
+    prediction_columns = [
+        "predicted_group",
+        "predicted_mineral"
+    ]
+
     remaining_columns = [
-        col for col in df.columns
+        col for col in final_df.columns
         if col not in prediction_columns
     ]
 
-    final_df = df[prediction_columns + remaining_columns]
+    final_df = final_df[
+        prediction_columns + remaining_columns
+    ]
 
     st.write("### Final Predictions (Full Dataset)")
     st.dataframe(final_df)
 
-    # Download full dataset with predictions first
+    # Download final prediction dataset
     csv = final_df.to_csv(index=False).encode("utf-8")
 
     st.download_button(
@@ -280,8 +345,9 @@ if df["predicted_mineral"].notna().any():
     )
 
 else:
-    st.error("No valid predictions — check model/scaler files or input data.")
-    
+    st.error(
+        "No valid predictions — check model/scaler files or input data."
+    )
 # if df["predicted_mineral"].notna().any():
 
 #     st.success("Full pipeline complete!")
