@@ -207,12 +207,60 @@ with st.spinner("Predicting mineral groups..."):
     group_preds = encoder.inverse_transform(group_preds_encoded)
 
 # Add predictions to ORIGINAL dataframe (not cleaned one)
+# df["predicted_group"] = group_preds
+
+# st.success("Step 1 complete — Mineral groups predicted!")
+
+# st.subheader("Full Data with Predicted Mineral Group")
+# st.dataframe(df)
+# Add predictions to ORIGINAL dataframe
 df["predicted_group"] = group_preds
 
 st.success("Step 1 complete — Mineral groups predicted!")
 
-st.subheader("Full Data with Predicted Mineral Group")
-st.dataframe(df)
+# =====================================================
+# Step 1 Output
+# =====================================================
+
+metadata_columns = [
+    "mineral_name",
+    "mineral_group",
+    "mineral_frequency",
+    "sample_label",
+    "rock_name",
+    "classification",
+    "latitude",
+    "longitude",
+    "doi/ref",
+    "igsn",
+    "analytical_method",
+    "data_source"
+]
+
+# Remove metadata columns
+step1_df = df.drop(
+    columns=[
+        col for col in metadata_columns
+        if col in df.columns
+    ]
+).copy()
+
+# Put predicted group as the FIRST column
+remaining_columns = [
+    col for col in step1_df.columns
+    if col != "predicted_group"
+]
+
+step1_df = step1_df[
+    ["predicted_group"] + remaining_columns
+]
+
+st.subheader("Step 1: Predicted Mineral Groups")
+
+st.dataframe(
+    step1_df,
+    use_container_width=True
+)
 
 
     # -----------------------------
