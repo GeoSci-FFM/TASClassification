@@ -37,11 +37,14 @@ st.markdown(
 st.sidebar.image(
     'Goethe-Logo.gif')
 
-st.subheader("The application contains 2 sections:")
+st.subheader("The application contains 3 sections:")
 st.markdown("""
 ### :blue[Classify volcanic rocks using ML model]
 - Based on major and minor oxides.
 
 ### :blue[Generate Synthetic Data from Real-World Data]
 - Use real-world data to generate synthetic data that tries to reflect the geochemical relationships within the oxides.
+
+### :blue[Classify minerals using ML models]
+- The model first predicts the mineral group in step 1 and then predicts the mineral in step 2. 
 """)
