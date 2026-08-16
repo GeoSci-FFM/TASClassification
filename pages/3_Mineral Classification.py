@@ -273,56 +273,95 @@ for group in df["predicted_group"].unique():
 # =====================================================
 # Final Output
 # =====================================================
+if df["predicted_mineral"].notna().any():
 
-# =====================================================
-# Final Output
-# =====================================================
+    st.success("Full pipeline complete!")
 
+    # -------------------------------------------------
+    # Remove metadata columns from final results
+    # -------------------------------------------------
+
+    metadata_columns = [
+        "mineral_name",
+        "mineral_group",
+        "mineral_frequency",
+        "sample_label",
+        "rock_name",
+        "classification",
+        "latitude",
+        "longitude",
+        "doi/ref",
+        "igsn",
+        "analytical_method",
+        "data_source"
+    ]
+
+    # Create a separate dataframe for final results
+    final_df = df.drop(
+        columns=[
+            col for col in metadata_columns
+            if col in df.columns
+        ]
+    ).copy()
+
+    # -------------------------------------------------
+    # Put predictions FIRST
+    # -------------------------------------------------
+
+    prediction_columns = [
+        "predicted_group",
+        "predicted_mineral"
+    ]
+
+    # Keep all remaining columns after predictions
+    remaining_columns = [
+        col for col in final_df.columns
+        if col not in prediction_columns
+    ]
+
+    # Final column order
+    final_df = final_df[
+        prediction_columns + remaining_columns
+    ]
+
+    # -------------------------------------------------
+    # Display final results
+    # -------------------------------------------------
+
+    st.write("### Final Predictions")
+
+    st.dataframe(
+        final_df,
+        use_container_width=True
+    )
+
+    # -------------------------------------------------
+    # Download final results
+    # -------------------------------------------------
+
+    csv = final_df.to_csv(index=False).encode("utf-8")
+
+    st.download_button(
+        label="Download Final Predictions CSV",
+        data=csv,
+        file_name="final_pipeline_predictions.csv",
+        mime="text/csv"
+    )
+
+else:
+
+    st.error(
+        "No valid predictions — check model/scaler files or input data."
+    )
 # if df["predicted_mineral"].notna().any():
 
 #     st.success("Full pipeline complete!")
 
-#     # Metadata columns to remove from final results
-#     metadata_columns = [
-#         "mineral_name",
-#         "mineral_group",
-#         "mineral_frequency",
-#         "sample_label",
-#         "rock_name",
-#         "classification",
-#         "latitude",
-#         "longitude",
-#         "doi/ref",
-#         "igsn",
-#         "analytical_method",
-#         "data_source"
-#     ]
-
-#     # Remove metadata columns
-#     final_df = df.drop(
-#         columns=[c for c in metadata_columns if c in df.columns]
-#     ).copy()
-
-#     # Put predictions as the first two columns
-#     prediction_columns = [
-#         "predicted_group",
-#         "predicted_mineral"
-#     ]
-
-#     remaining_columns = [
-#         c for c in final_df.columns
-#         if c not in prediction_columns
-#     ]
-
-#     final_df = final_df[
-#         prediction_columns + remaining_columns
-#     ]
-
 #     st.write("### Final Predictions (Full Dataset)")
-#     st.dataframe(final_df)
+#     st.dataframe(df)
 
-#     # Download final results
-#     csv = final_df.to_csv(index=False).encode("utf-8")
+#     # Download full dataset with both predictions
+#     csv = df.to_csv(index=False).encode("utf-8")
 
 #     st.download_button(
 #         label="Download Final Predictions CSV",
@@ -333,22 +372,3 @@ for group in df["predicted_group"].unique():
 
 # else:
 #     st.error("No valid predictions — check model/scaler files or input data.")
-if df["predicted_mineral"].notna().any():
-
-    st.success("Full pipeline complete!")
-
-    st.write("### Final Predictions (Full Dataset)")
-    st.dataframe(df)
-
-    # Download full dataset with both predictions
-    csv = df.to_csv(index=False).encode("utf-8")
-
-    st.download_button(
-        label="Download Final Predictions CSV",
-        data=csv,
-        file_name="final_pipeline_predictions.csv",
-        mime="text/csv"
-    )
-
-else:
-    st.error("No valid predictions — check model/scaler files or input data.")
