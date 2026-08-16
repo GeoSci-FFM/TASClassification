@@ -102,7 +102,7 @@ def clean_cell(val):
 def clean_dataframe(df):
     df = df.copy()
     numeric_cols = df.select_dtypes(include=['object']).columns
-    df[numeric_cols] = df[numeric_cols].applymap(clean_cell)
+    df[numeric_cols] = df[numeric_cols].map(clean_cell)
     df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='ignore')
 
     drop_cols = [
