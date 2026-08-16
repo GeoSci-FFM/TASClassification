@@ -102,17 +102,36 @@ def clean_cell(val):
 def clean_dataframe(df):
     df = df.copy()
     numeric_cols = df.select_dtypes(include=['object']).columns
-    df[numeric_cols] = df[numeric_cols].map(clean_cell)
-    df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='ignore')
+    # df[numeric_cols] = df[numeric_cols].map(clean_cell)
+    # df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='ignore')
+
+    # drop_cols = [
+    #     'mineral_frequency', 'sample_label', 'rock_name', 'classification',
+    #     'latitude', 'longitude', 'doi/ref', 'igsn', 'analytical_method', 'data_source'
+    # ]
+    # df.drop(columns=[c for c in drop_cols if c in df.columns], inplace=True)
+    # return df
+
+    # Clean each cell
+    for col in numeric_cols:
+        df[col] = df[col].map(clean_cell)
+
+    # Convert to numeric where possible, while preserving non-numeric values
+    for col in numeric_cols:
+        converted = pd.to_numeric(df[col], errors='coerce')
+        df[col] = converted.fillna(df[col])
 
     drop_cols = [
         'mineral_frequency', 'sample_label', 'rock_name', 'classification',
         'latitude', 'longitude', 'doi/ref', 'igsn', 'analytical_method', 'data_source'
     ]
-    df.drop(columns=[c for c in drop_cols if c in df.columns], inplace=True)
+
+    df.drop(
+        columns=[c for c in drop_cols if c in df.columns],
+        inplace=True
+    )
+
     return df
-
-
 # -----------------------------
 # Load Step 1 Model (cached)
 # -----------------------------
